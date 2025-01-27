@@ -6,6 +6,7 @@ namespace KatrinasDotNetApp.Models;
 public class Videospiel
 {
     [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     public ObjectId Id { get; set; }
     
     [BsonElement("Titel")]
