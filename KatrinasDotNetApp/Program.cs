@@ -1,13 +1,17 @@
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<VideospielContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("VideospielContext") ?? throw new InvalidOperationException("Connection string 'VideospielContext' not found.")));
 builder.Services.AddDbContext<VideospielDb>(opt => opt.UseInMemoryDatabase("VideospieleListe"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 
 app.MapGet("/testing", () => {
-    return "Hellow";
+    return Results.Json("Helloww");
 });
 
 app.MapGet("/videospiele", async (VideospielDb db) =>

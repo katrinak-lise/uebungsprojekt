@@ -2,9 +2,17 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { useEffect } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  //const [count, setCount] = useState(0)
+  const [message, setMessage] = useState('Nothing yet!')
+  useEffect(() => {
+    fetch('http://localhost:5084/testing')
+    .then(response => response.json())
+    .then((json) => setMessage(json))
+    .catch(error => console.error(error));
+  });
 
   return (
     <>
@@ -18,11 +26,12 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is now {count}
-        </button>
+{/*         <button onClick={() => setCount((count) => count + 1)}>
+          count is now {message}
+        </button> */}
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
+          The result of the request is {message}
         </p>
       </div>
       <p className="read-the-docs">
