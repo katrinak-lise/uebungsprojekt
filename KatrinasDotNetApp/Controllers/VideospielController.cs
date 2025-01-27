@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using KatrinasDotNetApp.Services;
+using KatrinasDotNetApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 
 namespace KatrinasDotNetApp.Controllers
 {
@@ -12,25 +10,25 @@ namespace KatrinasDotNetApp.Controllers
     [ApiController]
     public class VideospielController : ControllerBase
     {
-        private readonly VideospielContext _context;
+        private readonly VideospieleService _videospieleService;
 
-        public VideospielController(VideospielContext context)
+        public VideospielController(VideospieleService videospieleService)
         {
-            _context = context;
+            _videospieleService = videospieleService;
         }
 
         // GET: api/Videospiel
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Videospiel>>> GetVideospiel()
         {
-            return await _context.Videospiel.ToListAsync();
+            return await _videospieleService.GetAsync();
         }
 
         // GET: api/Videospiel/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Videospiel>> GetVideospiel(int id)
+        public async Task<ActionResult<Videospiel>> GetVideospiel(ObjectId id)
         {
-            var videospiel = await _context.Videospiel.FindAsync(id);
+            var videospiel = await _videospieleService.GetAsync(id);
 
             if (videospiel == null)
             {
@@ -43,29 +41,20 @@ namespace KatrinasDotNetApp.Controllers
         // PUT: api/Videospiel/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVideospiel(int id, Videospiel videospiel)
+        public async Task<IActionResult> PutVideospiel(ObjectId id, Videospiel videospiel)
         {
             if (id != videospiel.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(videospiel).State = EntityState.Modified;
-
+            
             try
             {
-                await _context.SaveChangesAsync();
+                await _videospieleService.UpdateAsync(id, videospiel);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VideospielExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -74,33 +63,26 @@ namespace KatrinasDotNetApp.Controllers
         // POST: api/Videospiel
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Videospiel>> PostVideospiel(Videospiel videospiel)
+        public async Task<ActionResult<Videospiel>> PostVideospiel(Videospiel neuesVideospiel)
         {
-            _context.Videospiel.Add(videospiel);
-            await _context.SaveChangesAsync();
+            await _videospieleService.CreateAsync(neuesVideospiel);
 
-            return CreatedAtAction("GetVideospiel", new { id = videospiel.Id }, videospiel);
+            return CreatedAtAction("GetVideospiel", new { id = neuesVideospiel.Id }, neuesVideospiel);
         }
 
         // DELETE: api/Videospiel/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVideospiel(int id)
+        public async Task<IActionResult> DeleteVideospiel(ObjectId id)
         {
-            var videospiel = await _context.Videospiel.FindAsync(id);
+            var videospiel = await _videospieleService.GetAsync(id);
             if (videospiel == null)
             {
                 return NotFound();
             }
-
-            _context.Videospiel.Remove(videospiel);
-            await _context.SaveChangesAsync();
+            
+            await _videospieleService.RemoveAsync(id);
 
             return NoContent();
-        }
-
-        private bool VideospielExists(int id)
-        {
-            return _context.Videospiel.Any(e => e.Id == id);
         }
     }
 }

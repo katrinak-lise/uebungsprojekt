@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
+namespace KatrinasDotNetApp.Models;
+
 class VideospielDb : DbContext
 {
     public VideospielDb(DbContextOptions<VideospielDb> options)

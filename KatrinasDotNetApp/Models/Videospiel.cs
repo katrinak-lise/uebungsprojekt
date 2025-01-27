@@ -1,6 +1,14 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace KatrinasDotNetApp.Models;
+
 public class Videospiel
 {
-    public int Id { get; set; }
+    [BsonId]
+    public ObjectId Id { get; set; }
+    
+    [BsonElement("Titel")]
     public string? Titel { get; set; }
     public string? Beschreibung { get; set; }
     public string? Entwickler  { get; set; }
